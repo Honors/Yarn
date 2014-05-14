@@ -24,29 +24,33 @@ void* run(void *arg) {
     x += i;
   }
   // Save return value.
-  resps[my_counter] = x; 
   printf("<", my_counter);
-  return NULL;
+  resps[my_counter] = x;
+  // Return where the return value is held.
+  return resps + my_counter;
 }
 
 int main() {
+  // Allocate space for return values.
   resps = malloc(sizeof (int) * 2);
-  int i = 0;
   // make a lock
   pthread_mutex_init(&lock, NULL) != 0;
+  int i = 0;
   while(i < THREAD_COUNT) {
     pthread_create(&(tid[i]), NULL, &run, NULL);
     i += 1;
   }
-  // Merge in the threads
+  // Merge in the threads.
   int j = 0;
   while(j < THREAD_COUNT) {
-    pthread_join(tid[j], NULL);
+    void* ptr;
+    pthread_join(tid[j], &ptr);
+    int resp = *(int*)ptr;
+    // Utilize the response from the thread.
     j += 1;
   }
   // Unlock.
   pthread_mutex_destroy(&lock);
-  // Utilize responses...
   return 0;
 }
 
