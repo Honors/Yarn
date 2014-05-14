@@ -13,6 +13,8 @@ pthread_mutex_t lock;
 
 void* run(void *arg) {
   // Avoid race conditions in updating the current counter value within a lock.
+  // Note that this could have been easily handled by the `arg` value, but this
+  // serves as an example of how one might process data-store updates, for example.
   pthread_mutex_lock(&lock);
   int my_counter = counter;
   counter += 1;
